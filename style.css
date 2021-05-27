@@ -35,10 +35,10 @@ body {
   text-align: center;
 }
 .align-container {
-  width: 14%;
+  min-width: 14%;
 }
 .color-container {
-  width: 10%;
+  min-width: 10%;
 }
 
 /*Formula - container*/
@@ -130,4 +130,12 @@ body {
 }
 .active {
   background-color: white;
+}
+.active-btn {
+  background-color: wheat;
+}
+
+/* nos-container */
+.nos-container > * {
+  border: none;
 }

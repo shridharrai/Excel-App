@@ -42,6 +42,26 @@ for (let i = 0; i < rows; ++i) {
   grid.appendChild(row);
 }
 
+//Making two-d array which represent the cells of one sheet and having a cellobj which holds the status of formatting properties for each cell
+let sheetDB = [];
+for (let i = 0; i < rows; ++i) {
+  let row = [];
+  for (let j = 0; j < cols; ++j) {
+    let cell = {
+      bold: 'normal',
+      italic: 'normal',
+      underline: 'none',
+      textAlign: 'center',
+      fontFamily: 'sans-sarif',
+      fontSize: '16',
+      color: 'black',
+      bgColor: 'none'
+    };
+    row.push(cell);
+  }
+  sheetDB.push(row);
+}
+
 //To iterate over all the cells and add event listener of click to display the cell position in address input box
 let allCells = document.querySelectorAll('.grid .cell');
 for (let i = 0; i < allCells.length; ++i) {
@@ -52,25 +72,75 @@ for (let i = 0; i < allCells.length; ++i) {
     rid = Number(rid);
     let address = `${String.fromCharCode(65 + cid)}${rid + 1}`;
     addressInput.value = address;
+    //changing the status of bold btn based on cells
+    let cellObj = sheetDB[rid][cid];
+    if (cellObj.bold == 'bold') {
+      boldBtn.classList.add('active-btn');
+    } else {
+      boldBtn.classList.remove('active-btn');
+    }
+    if (cellObj.italic == 'italic') {
+      italicBtn.classList.add('active-btn');
+    } else {
+      italicBtn.classList.remove('active-btn');
+    }
+    if (cellObj.underline == 'underline') {
+      underlineBtn.classList.add('active-btn');
+    } else {
+      underlineBtn.classList.remove('active-btn');
+    }
   });
 }
 //by default show the first cell in address i/p box so click on the first cell by default
 allCells[0].click();
 
-//On click on bold button bold the test of selected cell by getting the cell address from address box
+//On click on bold button bold the test of selected cell by getting the cell address from address box and toggle it also when clicking again for a particular cell
 boldBtn.addEventListener('click', function() {
   let cellEle = findCellEle();
-  cellEle.style.fontWeight = 'bold';
+  let rid = cellEle.getAttribute('rid');
+  let cid = cellEle.getAttribute('cid');
+  let cellObj = sheetDB[rid][cid];
+  if (cellObj.bold == 'normal') {
+    cellEle.style.fontWeight = 'bold';
+    boldBtn.classList.add('active-btn');
+    cellObj.bold = 'bold';
+  } else {
+    cellEle.style.fontWeight = 'normal';
+    boldBtn.classList.remove('active-btn');
+    cellObj.bold = 'normal';
+  }
 });
 
 underlineBtn.addEventListener('click', function() {
   let cellEle = findCellEle();
-  cellEle.style.textDecoration = 'underline';
+  let rid = cellEle.getAttribute('rid');
+  let cid = cellEle.getAttribute('cid');
+  let cellObj = sheetDB[rid][cid];
+  if (cellObj.underline == 'none') {
+    cellEle.style.textDecoration = 'underline';
+    underlineBtn.classList.add('active-btn');
+    cellObj.underline = 'underline';
+  } else {
+    cellEle.style.textDecoration = 'none';
+    underlineBtn.classList.remove('active-btn');
+    cellObj.underline = 'none';
+  }
 });
 
 italicBtn.addEventListener('click', function() {
   let cellEle = findCellEle();
-  cellEle.style.fontStyle = 'italic';
+  let rid = cellEle.getAttribute('rid');
+  let cid = cellEle.getAttribute('cid');
+  let cellObj = sheetDB[rid][cid];
+  if (cellObj.italic == 'normal') {
+    cellEle.style.fontStyle = 'italic';
+    italicBtn.classList.add('active-btn');
+    cellObj.italic = 'italic';
+  } else {
+    cellEle.style.fontStyle = 'normal';
+    italicBtn.classList.remove('active-btn');
+    cellObj.italic = 'normal';
+  }
 });
 
 //allignments
@@ -89,6 +159,7 @@ fontSizeEle.addEventListener('change', function() {
   cellEle.style.fontSize = fontSize + 'px';
 });
 
+//gives the cell at a specific address
 function findCellEle() {
   let address = addressInput.value;
   let { rid, cid } = getRIDCIDfromAddress(address);
@@ -96,6 +167,7 @@ function findCellEle() {
   return cellEle;
 }
 
+//gives the rowid and cellid from address passed
 function getRIDCIDfromAddress(address) {
   let cid = address.charCodeAt(0) - 65;
   let rid = Number(address.slice(1)) - 1;
