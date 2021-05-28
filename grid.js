@@ -7,6 +7,7 @@ let underlineBtn = document.querySelector('.underline');
 let italicBtn = document.querySelector('.italic');
 let alignBtns = document.querySelectorAll('.align-container>*');
 let fontSizeEle = document.querySelector('.font-size');
+let formulaBar = document.querySelector('.formula-input');
 let rows = 100;
 let cols = 26;
 
@@ -55,7 +56,10 @@ for (let i = 0; i < rows; ++i) {
       fontFamily: 'sans-sarif',
       fontSize: '16',
       color: 'black',
-      bgColor: 'none'
+      bgColor: 'none',
+      value: '',
+      formula: '',
+      children: []
     };
     row.push(cell);
   }
@@ -88,6 +92,11 @@ for (let i = 0; i < allCells.length; ++i) {
       underlineBtn.classList.add('active-btn');
     } else {
       underlineBtn.classList.remove('active-btn');
+    }
+    if(cellObj.formula) {
+      formulaBar.value = cellObj.formula;
+    } else {
+      formulaBar.value = "";
     }
   });
 }
