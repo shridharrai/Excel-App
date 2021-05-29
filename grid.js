@@ -8,6 +8,9 @@ let italicBtn = document.querySelector('.italic');
 let alignBtns = document.querySelectorAll('.align-container>*');
 let fontSizeEle = document.querySelector('.font-size');
 let formulaBar = document.querySelector('.formula-input');
+let btnContainer = document.querySelector('.add-sheet-btn-container');
+let sheetList = document.querySelector('.sheet-list');
+let firstSheet = document.querySelector('.sheet');
 let rows = 100;
 let cols = 26;
 
@@ -43,27 +46,102 @@ for (let i = 0; i < rows; ++i) {
   grid.appendChild(row);
 }
 
-//Making two-d array which represent the cells of one sheet and having a cellobj which holds the status of formatting properties for each cell
-let sheetDB = [];
-for (let i = 0; i < rows; ++i) {
-  let row = [];
-  for (let j = 0; j < cols; ++j) {
-    let cell = {
-      bold: 'normal',
-      italic: 'normal',
-      underline: 'none',
-      textAlign: 'center',
-      fontFamily: 'sans-sarif',
-      fontSize: '16',
-      color: 'black',
-      bgColor: 'none',
-      value: '',
-      formula: '',
-      children: []
-    };
-    row.push(cell);
+let sheetArr = [];
+let sheetDB;
+firstSheet.addEventListener('click', makeMeActive);
+firstSheet.click();
+
+function makeMeActive(e) {
+  //first remove the active class from all other sheets and then set to the curr sheet
+  let sheet = e.currentTarget;
+  let allSheets = document.querySelectorAll('.sheet');
+  for (let i = 0; i < allSheets.length; ++i) {
+    allSheets[i].classList.remove('active');
   }
-  sheetDB.push(row);
+  sheet.classList.add('active');
+
+  /*then check that whether the 2-D representation of sheet(sheetDB) is present in 3-d arr or not. If not present then it means it is the first sheet so create a new sheet in DB and then point the sheetDB to the curr sheet and also set the UI to the curr sheet */
+  let idx = sheet.getAttribute('idx');
+  // console.log(idx);
+  if (!sheetArr[idx]) {
+    createSheetInDB();
+  }
+  sheetDB = sheetArr[idx];
+  /*To reset the UI acc to the curr sheet from DB, it means the UI is same always only we are changing on the same UI based on sheet representation from DB */
+  let allCells = document.querySelectorAll('.grid .cell');
+  allCells[0].click();
+  setUIToCurrSheet();
+}
+
+btnContainer.addEventListener('click', function() {
+  //create new sheet and attach the idx attribute by getting the lastidx
+  let allSheets = document.querySelectorAll('.sheet');
+  let lastSheet = allSheets[allSheets.length - 1];
+  let lastIdx = lastSheet.getAttribute('idx');
+  lastIdx = Number(lastIdx);
+  let newSheet = document.createElement('div');
+  newSheet.setAttribute('class', 'sheet');
+  newSheet.setAttribute('idx', `${lastIdx + 1}`);
+  newSheet.innerText = `Sheet ${lastIdx + 2}`;
+  sheetList.appendChild(newSheet);
+
+  //first remove active class from all other sheets and then attach it to newsheet
+  for (let i = 0; i < allSheets.length; ++i) {
+    allSheets[i].classList.remove('active');
+  }
+  newSheet.classList.add('active');
+
+  //create a representation of the sheet in DB also
+  createSheetInDB();
+  sheetDB = sheetArr[lastIdx + 1];
+  setUIToCurrSheet();
+
+  //add active class whenever in future user clicks on it
+  newSheet.addEventListener('click', makeMeActive);
+});
+
+//Making two-d array which represent the cells of one sheet and having a cellobj which holds the status of formatting properties for each cell and then put this two-d arr in a one-d array for the n no. of sheets
+function createSheetInDB() {
+  let newDB = [];
+  for (let i = 0; i < rows; ++i) {
+    let row = [];
+    for (let j = 0; j < cols; ++j) {
+      let cell = {
+        bold: 'normal',
+        italic: 'normal',
+        underline: 'none',
+        textAlign: 'center',
+        fontFamily: 'sans-sarif',
+        fontSize: '16',
+        color: 'black',
+        bgColor: 'none',
+        value: '',
+        formula: '',
+        children: []
+      };
+      let ele = document.querySelector(`.grid .cell[rid='${i}'][cid='${j}']`);
+      ele.innerText = '';
+      row.push(cell);
+    }
+    newDB.push(row);
+  }
+  //push the 2-d arr formed to the 3-d arr
+  sheetArr.push(newDB);
+}
+
+//set the UI to the curr sheet from DB
+function setUIToCurrSheet() {
+  for (let i = 0; i < rows; ++i) {
+    for (let j = 0; j < cols; ++j) {
+      let ele = document.querySelector(`.grid .cell[rid='${i}'][cid='${j}']`);
+      let cell = sheetDB[i][j];
+      ele.innerText = cell.value;
+      ele.style.fontWeight = cell.bold;
+      ele.style.textDecoration = cell.underline;
+      ele.style.fontStyle = cell.italic;
+      ele.style.fontSize = cell.fontSize;
+    }
+  }
 }
 
 //To iterate over all the cells and add event listener of click to display the cell position in address input box
@@ -93,10 +171,10 @@ for (let i = 0; i < allCells.length; ++i) {
     } else {
       underlineBtn.classList.remove('active-btn');
     }
-    if(cellObj.formula) {
+    if (cellObj.formula) {
       formulaBar.value = cellObj.formula;
     } else {
-      formulaBar.value = "";
+      formulaBar.value = '';
     }
   });
 }

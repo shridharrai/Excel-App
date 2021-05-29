@@ -47,6 +47,9 @@ function evaluateFormula(formula) {
     if (asciiValue >= 65 && asciiValue <= 100) {
       let { rid, cid } = getRIDCIDfromAddress(formulaTokens[i]);
       let value = sheetDB[rid][cid].value;
+      if (value == '') {
+        value = 0;
+      }
       formulaTokens[i] = value;
     }
   }
