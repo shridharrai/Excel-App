@@ -41,7 +41,37 @@ body {
 }
 .menu-item-option:hover {
   border-radius: 3px;
-  background: lightblue;
+  background: lightgreen;
+  cursor: pointer;
+}
+
+/*File dropdown*/
+.dropdown-content li {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.dropdown-content li:hover {
+  border-radius: 3px;
+  background: lightgray;
+  cursor: pointer;
+}
+.file {
+  position: relative;
+  display: inline-block;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 140px;
+  /* overflow: auto; */
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+.show {
+  display: block;
 }
 
 .menu-item-2 {
@@ -181,6 +211,10 @@ body {
   color: rgb(110, 109, 109);
   font-size: 1.3rem;
 }
+.fa-plus:hover {
+  cursor: pointer;
+  color: rgb(3, 3, 3);
+}
 .sheet-list {
   width: calc(100vw - 2rem);
   height: 80%;
@@ -201,6 +235,9 @@ body {
   color: rgb(117, 121, 121);
   border-right: 0.1px solid rgb(121, 121, 121);
   border-top: 0.1px solid rgb(121, 121, 121);
+}
+.sheet:hover {
+  cursor: pointer;
 }
 /*TO hide the scrollbar but its effect is still present*/
 .sheet-list::-webkit-scrollbar {

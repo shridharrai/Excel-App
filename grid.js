@@ -5,8 +5,11 @@ let addressInput = document.querySelector('.address-input');
 let boldBtn = document.querySelector('.bold');
 let underlineBtn = document.querySelector('.underline');
 let italicBtn = document.querySelector('.italic');
-let alignBtns = document.querySelectorAll('.align-container>*');
 let fontSizeEle = document.querySelector('.font-size');
+let fontFamilyEle = document.querySelector('.font-family');
+let textAlignEle = document.querySelector('.align-container');
+let textColorEle = document.querySelector('#color');
+let bgColorEle = document.querySelector('#bg-color');
 let formulaBar = document.querySelector('.formula-input');
 let btnContainer = document.querySelector('.add-sheet-btn-container');
 let sheetList = document.querySelector('.sheet-list');
@@ -60,7 +63,7 @@ function makeMeActive(e) {
   }
   sheet.classList.add('active');
 
-  /*then check that whether the 2-D representation of sheet(sheetDB) is present in 3-d arr or not. If not present then it means it is the first sheet so create a new sheet in DB and then point the sheetDB to the curr sheet and also set the UI to the curr sheet */
+  /*then check that whether the 2-D representation of sheet(sheetDB) is present in 3-d arr(sheetArr) or not. If not present then it means it is the first sheet so create a new sheet in DB and then point the sheetDB to the curr sheet and also set the UI to the curr sheet */
   let idx = sheet.getAttribute('idx');
   // console.log(idx);
   if (!sheetArr[idx]) {
@@ -68,9 +71,9 @@ function makeMeActive(e) {
   }
   sheetDB = sheetArr[idx];
   /*To reset the UI acc to the curr sheet from DB, it means the UI is same always only we are changing on the same UI based on sheet representation from DB */
+  setUIToCurrSheet();
   let allCells = document.querySelectorAll('.grid .cell');
   allCells[0].click();
-  setUIToCurrSheet();
 }
 
 btnContainer.addEventListener('click', function() {
@@ -98,6 +101,8 @@ btnContainer.addEventListener('click', function() {
 
   //add active class whenever in future user clicks on it
   newSheet.addEventListener('click', makeMeActive);
+  let allCells = document.querySelectorAll('.grid .cell');
+  allCells[0].click();
 });
 
 //Making two-d array which represent the cells of one sheet and having a cellobj which holds the status of formatting properties for each cell and then put this two-d arr in a one-d array for the n no. of sheets
@@ -112,9 +117,9 @@ function createSheetInDB() {
         underline: 'none',
         textAlign: 'center',
         fontFamily: 'sans-sarif',
-        fontSize: '16',
-        color: 'black',
-        bgColor: 'none',
+        fontSize: '16px',
+        textColor: 'black',
+        bgColor: 'white',
         value: '',
         formula: '',
         children: []
@@ -140,6 +145,10 @@ function setUIToCurrSheet() {
       ele.style.textDecoration = cell.underline;
       ele.style.fontStyle = cell.italic;
       ele.style.fontSize = cell.fontSize;
+      ele.style.fontFamily = cell.fontFamily;
+      ele.style.textAlign = cell.textAlign;
+      ele.style.color = cell.textColor;
+      ele.style.backgroundColor = cell.bgColor;
     }
   }
 }
@@ -157,19 +166,35 @@ for (let i = 0; i < allCells.length; ++i) {
     //changing the status of bold btn based on cells
     let cellObj = sheetDB[rid][cid];
     if (cellObj.bold == 'bold') {
-      boldBtn.classList.add('active-btn');
+      boldBtn.classList.add('active-style');
     } else {
-      boldBtn.classList.remove('active-btn');
+      boldBtn.classList.remove('active-style');
     }
     if (cellObj.italic == 'italic') {
-      italicBtn.classList.add('active-btn');
+      italicBtn.classList.add('active-style');
     } else {
-      italicBtn.classList.remove('active-btn');
+      italicBtn.classList.remove('active-style');
     }
     if (cellObj.underline == 'underline') {
-      underlineBtn.classList.add('active-btn');
+      underlineBtn.classList.add('active-style');
     } else {
-      underlineBtn.classList.remove('active-btn');
+      underlineBtn.classList.remove('active-style');
+    }
+    if (cellObj.fontSize) {
+      // console.log(cellObj.fontSize);
+      fontSizeEle.value = cellObj.fontSize;
+    }
+    if (cellObj.fontFamily) {
+      fontFamilyEle.value = cellObj.fontFamily;
+    }
+    if (cellObj.textAlign) {
+      textAlignEle.value = cellObj.textAlign;
+    }
+    if (cellObj.textColor) {
+      textColorEle.value = cellObj.textColor;
+    }
+    if (cellObj.bgColor) {
+      bgColorEle.value = cellObj.bgColor;
     }
     if (cellObj.formula) {
       formulaBar.value = cellObj.formula;
@@ -189,11 +214,11 @@ boldBtn.addEventListener('click', function() {
   let cellObj = sheetDB[rid][cid];
   if (cellObj.bold == 'normal') {
     cellEle.style.fontWeight = 'bold';
-    boldBtn.classList.add('active-btn');
+    boldBtn.classList.add('active-style');
     cellObj.bold = 'bold';
   } else {
     cellEle.style.fontWeight = 'normal';
-    boldBtn.classList.remove('active-btn');
+    boldBtn.classList.remove('active-style');
     cellObj.bold = 'normal';
   }
 });
@@ -205,11 +230,11 @@ underlineBtn.addEventListener('click', function() {
   let cellObj = sheetDB[rid][cid];
   if (cellObj.underline == 'none') {
     cellEle.style.textDecoration = 'underline';
-    underlineBtn.classList.add('active-btn');
+    underlineBtn.classList.add('active-style');
     cellObj.underline = 'underline';
   } else {
     cellEle.style.textDecoration = 'none';
-    underlineBtn.classList.remove('active-btn');
+    underlineBtn.classList.remove('active-style');
     cellObj.underline = 'none';
   }
 });
@@ -221,29 +246,68 @@ italicBtn.addEventListener('click', function() {
   let cellObj = sheetDB[rid][cid];
   if (cellObj.italic == 'normal') {
     cellEle.style.fontStyle = 'italic';
-    italicBtn.classList.add('active-btn');
+    italicBtn.classList.add('active-style');
     cellObj.italic = 'italic';
   } else {
     cellEle.style.fontStyle = 'normal';
-    italicBtn.classList.remove('active-btn');
+    italicBtn.classList.remove('active-style');
     cellObj.italic = 'normal';
   }
 });
-
-//allignments
-for (let i = 0; i < alignBtns.length; ++i) {
-  alignBtns[i].addEventListener('click', function() {
-    let allignment = alignBtns[i].getAttribute('class');
-    let cellEle = findCellEle();
-    cellEle.style.textAlign = allignment;
-  });
-}
 
 //font-size
 fontSizeEle.addEventListener('change', function() {
   let fontSize = fontSizeEle.value;
   let cellEle = findCellEle();
-  cellEle.style.fontSize = fontSize + 'px';
+  let rid = cellEle.getAttribute('rid');
+  let cid = cellEle.getAttribute('cid');
+  let cellObj = sheetDB[rid][cid];
+  cellEle.style.fontSize = fontSize;
+  cellObj.fontSize = fontSize;
+});
+
+//font-family
+fontFamilyEle.addEventListener('change', function() {
+  let fontFamily = fontFamilyEle.value;
+  let cellEle = findCellEle();
+  let rid = cellEle.getAttribute('rid');
+  let cid = cellEle.getAttribute('cid');
+  let cellObj = sheetDB[rid][cid];
+  cellEle.style.fontFamily = fontFamily;
+  cellObj.fontFamily = fontFamily;
+});
+
+//allignments
+textAlignEle.addEventListener('change', function() {
+  let textAlign = textAlignEle.value;
+  let cellEle = findCellEle();
+  let rid = cellEle.getAttribute('rid');
+  let cid = cellEle.getAttribute('cid');
+  let cellObj = sheetDB[rid][cid];
+  cellEle.style.textAlign = textAlign;
+  cellObj.textAlign = textAlign;
+});
+
+//Text-color
+textColorEle.addEventListener('change', function(e) {
+  let textColor = e.target.value;
+  let cellEle = findCellEle();
+  let rid = cellEle.getAttribute('rid');
+  let cid = cellEle.getAttribute('cid');
+  let cellObj = sheetDB[rid][cid];
+  cellEle.style.color = textColor;
+  cellObj.textColor = textColor;
+});
+
+//bg-color
+bgColorEle.addEventListener('change', function(e) {
+  let bgColor = e.target.value;
+  let cellEle = findCellEle();
+  let rid = cellEle.getAttribute('rid');
+  let cid = cellEle.getAttribute('cid');
+  let cellObj = sheetDB[rid][cid];
+  cellEle.style.backgroundColor = bgColor;
+  cellObj.bgColor = bgColor;
 });
 
 //gives the cell at a specific address
